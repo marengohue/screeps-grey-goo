@@ -1,13 +1,14 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import cleanUpCreepMemory from "utils/Cleanup";
 
-import roleHarvester from "roles/Harvester";
+import roleHarvester from "roles/harvester/Role";
 import controlPopulation from "spawn/PopController";
+import { ROLE_HARVESTER } from "constants/RoleNames";
 
 type CreepRoleDictionary = { [key: string]: (c: Creep) => void };
 
 const creepRoles: CreepRoleDictionary = {
-    "harvester": roleHarvester
+    [ROLE_HARVESTER]: roleHarvester
 };
 
 function runCreepAI(creep: Creep) {

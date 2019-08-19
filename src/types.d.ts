@@ -3,6 +3,7 @@
 // memory extension samples
 interface CreepMemory {
   role: string;
+  roleMemory: any;
   room: string;
   working: boolean;
 }
