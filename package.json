@@ -35,6 +35,7 @@
     "@types/screeps": "^2.4.0",
     "@types/sinon": "^5.0.5",
     "@types/sinon-chai": "^3.2.0",
+    "@types/uuid": "^3.4.5",
     "chai": "^4.2.0",
     "lodash": "^3.10.1",
     "mocha": "^5.2.0",
@@ -58,6 +59,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "source-map": "~0.6.1"
+    "source-map": "~0.6.1",
+    "uuid": "^3.3.3"
   }
 }
