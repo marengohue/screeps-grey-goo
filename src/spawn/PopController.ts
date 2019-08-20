@@ -11,10 +11,13 @@ export default function controlPopulation() {
         ..._.mapValues(desiredPopulationByRole, () => 0),
         ..._.countBy(Game.creeps, c => c.memory.role)
     };
-    console.log(JSON.stringify(roleCounts));
-    _.find(roleCounts, (count, role) => {
-        if (role && count < desiredPopulationByRole[role]) {
-            console.log(role, count, desiredPopulationByRole[role]);
+    const roleArray = _.chain(roleCounts)
+        .pairs()
+        .sortByOrder((pair) => pair[1])
+        .value();
+    _.find(roleArray, ([role, count]) => {
+        if (role && count as number < desiredPopulationByRole[role as string]) {
+            console.log(role, count, desiredPopulationByRole[role as string]);
             const spawn = Game.spawns[DEFAULT_SPAWN_NAME];
             console.log("Spawning a " + role);
             const result = spawn
