@@ -4,7 +4,7 @@ import { ROLE_HARVESTER, ROLE_BUILDER } from "constants/RoleNames";
 let creepId = 0;
 
 const desiredPopulationByRole: { [role: string]: number } = {
-    [ROLE_HARVESTER]: 25,
+    [ROLE_HARVESTER]: 15,
     [ROLE_BUILDER]: 3
 };
 

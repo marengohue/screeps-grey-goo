@@ -10,17 +10,27 @@ function getDefaultSpawn(): StructureSpawn {
     return Game.spawns[DEFAULT_SPAWN_NAME];
 }
 
-function findDropoffTarget(memory: HarvesterMemory): void {
+function findDropoffTarget(creep: Creep, memory: HarvesterMemory): void {
     const defaultSpawn = getDefaultSpawn();
     memory.state = "dropping";
     if (defaultSpawn.energy < defaultSpawn.energyCapacity) {
         memory.dropoffId = defaultSpawn.id;
         memory.dropoffType = "spawn";
-    } else if (defaultSpawn.room.controller) {
-        memory.dropoffId = defaultSpawn.room.controller.id;
-        memory.dropoffType = "controller";
     } else {
-        memory.state = "idle";
+
+        const storagesAndExtensions = creep.room.find(FIND_MY_STRUCTURES, {
+            filter: (s) => s.structureType === "extension" || s.structureType === "storage"
+        });
+        if (storagesAndExtensions.length) {
+            const dropoff = _.sample(storagesAndExtensions);
+            memory.dropoffId = dropoff.id;
+            memory.dropoffType = dropoff.structureType as any;
+        } else if (defaultSpawn.room.controller) {
+            memory.dropoffId = defaultSpawn.room.controller.id;
+            memory.dropoffType = "controller";
+        } else {
+            memory.state = "idle";
+        }
     }
 }
 
@@ -57,7 +67,7 @@ function runIdleState(creep: Creep, memory: HarvesterMemory) {
     if (creep.carry.energy < creep.carryCapacity) {
         findMiningTarget(creep, memory);
     } else {
-        findDropoffTarget(memory)
+        findDropoffTarget(creep, memory)
     }
     if (memory.state === "idle") {
         creep.moveTo(getDefaultSpawn());
@@ -82,11 +92,21 @@ function runDroppingState(creep: Creep, memory: HarvesterMemory) {
         memory.state = "idle";
         delete memory.dropoffId;
         delete memory.dropoffType;
+        delete memory.awaitingDropoffFor;
     } else {
         const [dropoff, dropoffAction] = getDropoffWithAction(creep, memory);
-        if (dropoffAction() === ERR_NOT_IN_RANGE) {
+        const dropoffResult = dropoffAction();
+        if (dropoffResult === ERR_NOT_IN_RANGE) {
             creep.room.visual.line(creep.pos, dropoff.pos, { color: "#aaaaff" });
             creep.moveTo(dropoff);
+        } else if (dropoffResult === ERR_FULL) {
+            memory.awaitingDropoffFor++;
+            // Pick a new target after 15 ticks of being unable to dropoff
+            if (memory.awaitingDropoffFor === 15) {
+                memory.state = "idle";
+            }
+        } else {
+            memory.awaitingDropoffFor = 0;
         }
     }
 }
