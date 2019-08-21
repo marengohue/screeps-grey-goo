@@ -3,15 +3,18 @@ import cleanUpCreepMemory from "utils/Cleanup";
 
 import roleHarvester from "roles/harvester/Role";
 import roleBuilder from "roles/builder/Role";
+import roleDrone from "roles/drone/Role";
 
 import controlPopulation from "spawn/PopController";
-import { ROLE_HARVESTER, ROLE_BUILDER } from "constants/RoleNames";
+import { ROLE_HARVESTER, ROLE_BUILDER, ROLE_DRONE, ROLE_LOGI } from "constants/RoleNames";
 
 type CreepRoleDictionary = { [key: string]: (c: Creep) => void };
 
 const creepRoles: CreepRoleDictionary = {
     [ROLE_HARVESTER]: roleHarvester,
-    [ROLE_BUILDER]: roleBuilder
+    [ROLE_BUILDER]: roleBuilder,
+    [ROLE_DRONE]: roleDrone.bind(null, null, 0.95),
+    [ROLE_LOGI]: roleDrone.bind(null, STRUCTURE_ROAD, 0.6)
 };
 
 function runCreepAI(creep: Creep) {

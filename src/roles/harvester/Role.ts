@@ -81,7 +81,6 @@ function runMiningState(creep: Creep, memory: HarvesterMemory) {
     } else {
         const source = Game.getObjectById<Source>(memory.sourceId);
         if (source && creep.harvest(source) === ERR_NOT_IN_RANGE) {
-            creep.room.visual.line(creep.pos, source.pos, { color: "#ffaaaa" });
             creep.moveTo(source);
         }
     }
@@ -97,7 +96,6 @@ function runDroppingState(creep: Creep, memory: HarvesterMemory) {
         const [dropoff, dropoffAction] = getDropoffWithAction(creep, memory);
         const dropoffResult = dropoffAction();
         if (dropoffResult === ERR_NOT_IN_RANGE) {
-            creep.room.visual.line(creep.pos, dropoff.pos, { color: "#aaaaff" });
             creep.moveTo(dropoff);
         } else if (dropoffResult === ERR_FULL) {
             memory.awaitingDropoffFor++;

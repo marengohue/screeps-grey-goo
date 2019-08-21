@@ -1,9 +1,11 @@
 import { DEFAULT_SPAWN_NAME } from "constants/Names";
-import { ROLE_HARVESTER, ROLE_BUILDER } from "constants/RoleNames";
+import { ROLE_HARVESTER, ROLE_BUILDER, ROLE_DRONE, ROLE_LOGI } from "constants/RoleNames";
 
 const desiredPopulationByRole: { [role: string]: number } = {
     [ROLE_HARVESTER]: 15,
-    [ROLE_BUILDER]: 2
+    [ROLE_BUILDER]: 5,
+    [ROLE_DRONE]: 1,
+    [ROLE_LOGI]: 3
 };
 
 export default function controlPopulation() {
