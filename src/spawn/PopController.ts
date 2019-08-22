@@ -1,35 +1,42 @@
-import { DEFAULT_SPAWN_NAME } from "constants/Names";
-import { ROLE_HARVESTER, ROLE_BUILDER, ROLE_DRONE, ROLE_LOGI } from "constants/RoleNames";
+import { DEFAULT_SPAWN_NAME } from 'constants/Names';
+import {
+    ROLE_BUILDER,
+    ROLE_DRONE,
+    ROLE_HARVESTER,
+    ROLE_LOGI
+    } from 'constants/RoleNames';
 
 const desiredPopulationByRole: { [role: string]: number } = {
     [ROLE_HARVESTER]: 15,
-    [ROLE_BUILDER]: 5,
+    [ROLE_BUILDER]: 2,
     [ROLE_DRONE]: 1,
     [ROLE_LOGI]: 3
 };
 
 export default function controlPopulation() {
+    const targetSpawn = Game.spawns[DEFAULT_SPAWN_NAME];
+    if (!targetSpawn.canCreateCreep) return;
     const roleCounts = {
         ..._.mapValues(desiredPopulationByRole, () => 0),
         ..._.countBy(Game.creeps, c => c.memory.role)
     };
     const roleArray = _.chain(roleCounts)
         .pairs()
-        .sortByOrder((pair) => pair[1])
-        .value();
-    _.find(roleArray, ([role, count]) => {
-        if (role && count as number < desiredPopulationByRole[role as string]) {
-            console.log(role, count, desiredPopulationByRole[role as string]);
-            const spawn = Game.spawns[DEFAULT_SPAWN_NAME];
-            console.log("Spawning a " + role);
-            const result = spawn
+        .sortByOrder(([role, count]: [string, number]) => count / desiredPopulationByRole[role])
+        .valueOf() as [string, number][];
+    roleArray.some(([role, count]) => {
+        if (role && count < desiredPopulationByRole[role]) {
+            const filledPercentage = Math.round(count / desiredPopulationByRole[role] * 100);
+            console.log(`Spawning a ${role} - ${count}/${desiredPopulationByRole[role]} (${filledPercentage}% filled)`);
+            Game
+                .spawns[DEFAULT_SPAWN_NAME]
                 .spawnCreep(
                     [WORK, CARRY, MOVE],
                     `GooDrop-${new Date().getTime()}`,
                     { memory: { role } as any }
                 );
-            return result === OK;
+            return true;
         }
-        return null;
+        return false;
     });
 }
